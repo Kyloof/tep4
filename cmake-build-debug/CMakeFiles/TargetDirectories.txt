@@ -1,0 +1,3 @@
+C:/Users/janku/OneDrive/Desktop/Studia/TEP/tep4/cmake-build-debug/CMakeFiles/tep4.dir
+C:/Users/janku/OneDrive/Desktop/Studia/TEP/tep4/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/janku/OneDrive/Desktop/Studia/TEP/tep4/cmake-build-debug/CMakeFiles/rebuild_cache.dir
