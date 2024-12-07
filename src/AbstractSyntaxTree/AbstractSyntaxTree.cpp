@@ -36,17 +36,18 @@ AbstractSyntaxTree& AbstractSyntaxTree::operator=(const AbstractSyntaxTree& othe
     deleteTree();
     if (other.root != nullptr) {
         root = other.root->clone();
+        varsSet = other.varsSet;
     }
     return *this;
 }
 
-CResult<AbstractSyntaxTree, CError> AbstractSyntaxTree::operator+(const AbstractSyntaxTree& other) const {
+CResult<AbstractSyntaxTree*, CError> AbstractSyntaxTree::operator+(const AbstractSyntaxTree& other) const {
     AbstractSyntaxTree newTree = *this;
 
     std::string formula;
-    CResult<AbstractSyntaxTree,CError> result = newTree.join(other.root->getFormula(formula));
+    CResult<AbstractSyntaxTree*,CError> result = newTree.join(other.root->getFormula(formula));
     if (result.isSuccess()) return result;
-    return CResult<AbstractSyntaxTree, CError>::fail(result.getErrors());
+    return CResult<AbstractSyntaxTree*, CError>::fail(result.getErrors());
 }
 
 
@@ -140,7 +141,7 @@ CResult<std::string, CError> AbstractSyntaxTree::comp(const std::string &vars) c
     while (iss >> value) {
         values.push_back(value);
     }
-    if (values.size() != varsSet.size() || (values.empty() && varsSet.empty())) {
+    if (values.size() != varsSet.size()) {
         return CResult<std::string, CError>::fail(new CError("Error: Number of variables is not equal to values entered. \n"));
     }
 
@@ -156,15 +157,15 @@ CResult<std::string, CError> AbstractSyntaxTree::comp(const std::string &vars) c
     std::ostringstream oss;
     oss << returnValue;
     std::string str = oss.str();
-    return CResult<std::string, CError>::success(str);
+    return str;
 }
 
-CResult<AbstractSyntaxTree,CError> AbstractSyntaxTree::join(const std::string &formula) {
+CResult<AbstractSyntaxTree*,CError> AbstractSyntaxTree::join(const std::string &formula) {
     AbstractSyntaxTree tempTree = *this;
 
     AbstractSyntaxTree other;
-    CResult<AbstractSyntaxTree, CError> result = other.enter(formula);
-    if (!result.isSuccess()) return CResult<AbstractSyntaxTree, CError>::fail(result.getErrors());
+    CResult<AbstractSyntaxTree*, CError> result = other.enter(formula);
+    if (!result.isSuccess()) return CResult<AbstractSyntaxTree*, CError>::fail(result.getErrors());
 
     tempTree.varsSet.insert(other.varsSet.begin(), other.varsSet.end());
 
@@ -184,7 +185,7 @@ CResult<AbstractSyntaxTree,CError> AbstractSyntaxTree::join(const std::string &f
 
             result = tempTree.enter(formula);
             if (!result.isSuccess()) {
-                return CResult<AbstractSyntaxTree, CError>::fail(result.getErrors());
+                return CResult<AbstractSyntaxTree*, CError>::fail(result.getErrors());
             }
         }
     } else {
@@ -192,10 +193,10 @@ CResult<AbstractSyntaxTree,CError> AbstractSyntaxTree::join(const std::string &f
     }
 
     *this = tempTree;
-    return CResult<AbstractSyntaxTree, CError>::success(*this);
+    return CResult<AbstractSyntaxTree*, CError>::success(this);
 }
 
-CResult<AbstractSyntaxTree, CError> AbstractSyntaxTree::enter(const std::string &formula) {
+CResult<AbstractSyntaxTree*, CError> AbstractSyntaxTree::enter(const std::string &formula) {
     AbstractSyntaxTree tempTree;
     std::vector<CError*> cerrVector;
 
@@ -220,15 +221,15 @@ CResult<AbstractSyntaxTree, CError> AbstractSyntaxTree::enter(const std::string 
             currentFormula += formula[i];
         }
     }
-    if (!cerrVector.empty()) return CResult<AbstractSyntaxTree, CError>::fail(cerrVector);
+    if (!cerrVector.empty()) return CResult<AbstractSyntaxTree*, CError>::fail(cerrVector);
 
     if (!tempTree.fixTree()) {
-        return CResult<AbstractSyntaxTree, CError>::fail(new CError("Error: Invalid formula entered. \n"));
+        return CResult<AbstractSyntaxTree*, CError>::fail(new CError("Error: Invalid formula entered. \n"));
     }
 
     *this = tempTree;
 
-    return CResult<AbstractSyntaxTree, CError>::success(*this);
+    return CResult<AbstractSyntaxTree*, CError>::success(this);
 }
 
 

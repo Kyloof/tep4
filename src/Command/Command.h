@@ -7,7 +7,8 @@
 #include <vector>
 
 #include "../AbstractSyntaxTree/AbstractSyntaxTree.h"
-
+#include "../CError/CError.h"
+#include <sstream>
 
 class Command {
 
@@ -23,9 +24,10 @@ private:
     static void helpCommand();
     void compCommand(const std::string& formula) const;
     void varsCommand();
-    CResult<bool, CError> checkFormula(const std::string& formula);
+    static CResult<bool, CError> checkFormula(const std::string& formula);
+    CResult<AbstractSyntaxTree*, CError> prepareEnter(const std::string &formula);
+
     AbstractSyntaxTree AST;
-    CResult<AbstractSyntaxTree, CError> prepareEnter(const std::string &formula);
 };
 
 

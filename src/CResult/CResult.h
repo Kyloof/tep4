@@ -7,7 +7,6 @@
 #include <iostream>
 #include <vector>
 
-#include "../CError/CError.h"
 
 //T - type returned | E - error type
 template<typename T, typename E>
@@ -17,53 +16,36 @@ public:
     CResult(const T& value) : value(new T(value)), errors() {}
 
     CResult(E* error) : value(nullptr) {
-        if (error) {
-            errors.push_back(new E(*error));
-        }
+        if (error) errors.push_back(new E(*error));
     }
 
+    //Takes ownership of pointers
     CResult(const std::vector<E*>& errors) : value(nullptr) {
-        for (E* error : errors) {
-            if (error) {
-                this->errors.push_back(new E(*error));
-            }
-        }
+        for (E* error : errors) if (error) this->errors.push_back(new E(*error));
     }
 
     CResult(const CResult<T, E>& other) : value(nullptr), errors() {
-        if (other.value) {
-            value = new T(*other.value);
-        }
-        for (E* error : other.errors) {
-            if (error) {
-                errors.push_back(new E(*error));
-            }
-        }
+        if (other.value) value = new T(*other.value);
+        for (E* error : other.errors) if (error) errors.push_back(new E(*error));
     }
 
     ~CResult() {
         delete value;
-        for (E* error : errors) {
-            delete error;
-        }
+        for (E* error : errors) delete error;
     }
 
     CResult<T, E>& operator=(const CResult<T, E>& other) {
         if (this != &other) {
             delete value;
-            for (E* error : errors) {
-                delete error;
-            }
+            for (E* error : errors) delete error;
             errors.clear();
-
+            //if possible to assign deep copy value
             value = other.value ? new T(*other.value) : nullptr;
-            for (E* error : other.errors) {
-                errors.push_back(new E(*error));
-            }
+            //deep copy errors
+            for (E* error : other.errors) errors.push_back(new E(*error));
         }
         return *this;
     }
-
 
     static CResult<T, E> success(const T& value) {
         return CResult(value);
@@ -78,15 +60,12 @@ public:
     }
 
     void showErrors() {
-        for (int i = 0; i < errors.size(); i++) {
-            int j = errors.size();
-            std::cout << *errors[i];
-        }
+        for (int i = 0; i < errors.size(); i++) std::cout << *errors[i];
     }
 
-    // Getters
+    // Accessors
     bool isSuccess() const {
-        return value != nullptr;
+        return errors.empty();
     }
 
     bool hasErrors() const {
@@ -114,27 +93,22 @@ public:
     // Constructors
     CResult(){}
 
-    CResult(E* error) {
-        if (error) {
-            errors.push_back(error);
-        }
+    //Takes ownership of pointer
+    CResult(E* error){
+        if (error) errors.push_back(error);
     }
 
-    CResult(std::vector<E*>& errors) {
-        for (int i = 0; i < errors.size(); i++) {
-            this->errors.push_back(new E*(errors[i]));
-        }
+    //Takes ownership of pointers
+    CResult(const std::vector<E*>& errors) {
+        for (E* error : errors) if (error) this->errors.push_back(error);
     }
 
     CResult(const CResult<void, E>& other) {
-        for (int i = 0; i < errors.size(); i++) {
-            this->errors.push_back(new E*(errors[i]));
-        }
+        for (E* error : other.errors) if (error) errors.push_back(new E(*error));
     }
 
     ~CResult() {
-        for (int i = errors.size() - 1; i >= 0; i--) delete errors[i];
-        errors.clear();
+        for (E* error : errors) delete error;
     }
 
     // Functions
@@ -152,20 +126,17 @@ public:
 
     CResult<void, E>& operator=(const CResult<void, E>& other) {
         if (this != &other) {
-            for (int i = errors.size() - 1; i >= 0; i--) delete errors[i];
+            for (E* error : errors) delete error;
             errors.clear();
 
-            for (int i = 0; i < errors.size(); i++) {
-                this->errors.push_back(new E*(errors[i]));
-            }
+            //deep copy errors
+            for (int i = 0; i < errors.size(); i++) this->errors.push_back(new E*(errors[i]));
         }
         return *this;
     }
 
     void showErrors() {
-        for (int i = 0; i < errors.size(); i++) {
-            std::cout << *errors[i] << std::endl;
-        }
+        for (int i = 0; i < errors.size(); i++) std::cout << *errors[i] << std::endl;
     }
 
     // Getters

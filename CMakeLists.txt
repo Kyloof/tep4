@@ -12,7 +12,6 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(tep4
         src/CError/CError.h
         src/CError/CError.cpp
-        src/CResult/CResult.cpp
         src/CResult/CResult.h
         src/AbstractSyntaxTree/AbstractSyntaxTree.cpp
         src/AbstractSyntaxTree/AbstractSyntaxTree.h

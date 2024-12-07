@@ -15,9 +15,9 @@
     * @param result - result of some operation.
     * @param filename - file to save the result of CResult class.
  */
+template <typename T>
 class Save {
 public:
-    template <typename T>
     static void saveToFile(const CResult<T, CError>& result, const std::string& filename) {
         std::ofstream file(filename, std::ios::out);
 
@@ -26,15 +26,18 @@ public:
             return;
         }
 
-        if (result.hasErrors()) {
+        if (!result.isSuccess()) {
             for (CError* error : result.getErrors()) {
                 file << error->getDescription() << std::endl;
             }
         }
         file.close();
     }
-
-    // AST* Specialization
+};
+template <>
+class Save<AbstractSyntaxTree*> {
+public:
+    // AST Specialization
     static void saveToFile(const CResult<AbstractSyntaxTree*, CError>& result, const std::string& filename) {
         std::ofstream file(filename, std::ios::out);
 

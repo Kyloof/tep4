@@ -56,13 +56,6 @@ build CMakeFiles/tep4.dir/src/CError/CError.cpp.obj: CXX_COMPILER__tep4_unscanne
   OBJECT_DIR = CMakeFiles\tep4.dir
   OBJECT_FILE_DIR = CMakeFiles\tep4.dir\src\CError
 
-build CMakeFiles/tep4.dir/src/CResult/CResult.cpp.obj: CXX_COMPILER__tep4_unscanned_Debug C$:/Users/janku/OneDrive/Desktop/Studia/TEP/tep4/src/CResult/CResult.cpp || cmake_object_order_depends_target_tep4
-  DEP_FILE = CMakeFiles\tep4.dir\src\CResult\CResult.cpp.obj.d
-  FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
-  INCLUDES = -IC:/Users/janku/OneDrive/Desktop/Studia/TEP/tep4/src/NodeInterface -IC:/Users/janku/OneDrive/Desktop/Studia/TEP/tep4/src/NodeTypes/Literal -IC:/Users/janku/OneDrive/Desktop/Studia/TEP/tep4/src/NodeTypes/Operator -IC:/Users/janku/OneDrive/Desktop/Studia/TEP/tep4/src/NodeTypes/Variable
-  OBJECT_DIR = CMakeFiles\tep4.dir
-  OBJECT_FILE_DIR = CMakeFiles\tep4.dir\src\CResult
-
 build CMakeFiles/tep4.dir/src/AbstractSyntaxTree/AbstractSyntaxTree.cpp.obj: CXX_COMPILER__tep4_unscanned_Debug C$:/Users/janku/OneDrive/Desktop/Studia/TEP/tep4/src/AbstractSyntaxTree/AbstractSyntaxTree.cpp || cmake_object_order_depends_target_tep4
   DEP_FILE = CMakeFiles\tep4.dir\src\AbstractSyntaxTree\AbstractSyntaxTree.cpp.obj.d
   FLAGS = -g -std=gnu++20 -fdiagnostics-color=always
@@ -169,7 +162,7 @@ build CMakeFiles/tep4.dir/main.cpp.obj: CXX_COMPILER__tep4_unscanned_Debug C$:/U
 #############################################
 # Link the executable tep4.exe
 
-build tep4.exe: CXX_EXECUTABLE_LINKER__tep4_Debug CMakeFiles/tep4.dir/src/CError/CError.cpp.obj CMakeFiles/tep4.dir/src/CResult/CResult.cpp.obj CMakeFiles/tep4.dir/src/AbstractSyntaxTree/AbstractSyntaxTree.cpp.obj CMakeFiles/tep4.dir/src/NodeTypes/Literal/Literal.cpp.obj CMakeFiles/tep4.dir/src/OperatorType/BinaryOperator/ABinaryOperator.cpp.obj CMakeFiles/tep4.dir/src/NodeTypes/Variable/Variable.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/BinaryOperatorsFunc/Addition/Addition.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/BinaryOperatorsFunc/Divide/Divide.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/BinaryOperatorsFunc/Multiply/Multiply.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/BinaryOperatorsFunc/Substract/Subtract.cpp.obj CMakeFiles/tep4.dir/src/Command/Command.cpp.obj CMakeFiles/tep4.dir/src/OperatorType/UniOperator/AUniOperator.cpp.obj CMakeFiles/tep4.dir/src/NodeTypes/Operator/AOperator.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/UniOperatorsFunc/Sinus/Sinus.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/UniOperatorsFunc/Cos/Cos.cpp.obj CMakeFiles/tep4.dir/main.cpp.obj
+build tep4.exe: CXX_EXECUTABLE_LINKER__tep4_Debug CMakeFiles/tep4.dir/src/CError/CError.cpp.obj CMakeFiles/tep4.dir/src/AbstractSyntaxTree/AbstractSyntaxTree.cpp.obj CMakeFiles/tep4.dir/src/NodeTypes/Literal/Literal.cpp.obj CMakeFiles/tep4.dir/src/OperatorType/BinaryOperator/ABinaryOperator.cpp.obj CMakeFiles/tep4.dir/src/NodeTypes/Variable/Variable.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/BinaryOperatorsFunc/Addition/Addition.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/BinaryOperatorsFunc/Divide/Divide.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/BinaryOperatorsFunc/Multiply/Multiply.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/BinaryOperatorsFunc/Substract/Subtract.cpp.obj CMakeFiles/tep4.dir/src/Command/Command.cpp.obj CMakeFiles/tep4.dir/src/OperatorType/UniOperator/AUniOperator.cpp.obj CMakeFiles/tep4.dir/src/NodeTypes/Operator/AOperator.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/UniOperatorsFunc/Sinus/Sinus.cpp.obj CMakeFiles/tep4.dir/src/OperatorsFunc/UniOperatorsFunc/Cos/Cos.cpp.obj CMakeFiles/tep4.dir/main.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\tep4.dir

@@ -15,6 +15,7 @@
 #include "../OperatorsFunc/BinaryOperatorsFunc/Substract/Subtract.h"
 #include "../OperatorsFunc/UniOperatorsFunc/Cos/Cos.h"
 #include "../OperatorsFunc/UniOperatorsFunc/Sinus/Sinus.h"
+#include "../CError/CError.h"
 #include <string>
 
 #include "../CResult/CResult.h"
@@ -30,12 +31,12 @@ public:
 
     //Operators
     AbstractSyntaxTree& operator=(const AbstractSyntaxTree& other);
-    CResult<AbstractSyntaxTree, CError> operator+(const AbstractSyntaxTree& other) const;
+    CResult<AbstractSyntaxTree*, CError> operator+(const AbstractSyntaxTree& other) const;
 
 
     //Functions
-    CResult<AbstractSyntaxTree, CError> enter(const std::string& formula);
-    CResult<AbstractSyntaxTree, CError> join(const std::string& formula);
+    CResult<AbstractSyntaxTree*, CError> enter(const std::string& formula);
+    CResult<AbstractSyntaxTree*, CError> join(const std::string& formula);
     CResult<std::string, CError> vars();
     CResult<std::string, CError> comp(const std::string& vars) const;
     CResult<std::string, CError> returnFormula() const;

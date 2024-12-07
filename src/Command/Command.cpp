@@ -3,11 +3,12 @@
 //
 
 #include "Command.h"
-
 #include <algorithm>
 #include <functional>
 #include <iostream>
-#include <sstream>
+
+#include "../Save/Save.h"
+std::string ERROR_MSG = "Error: Something went wrong check errorLog.txt \n";
 
 Command::Command() {}
 
@@ -18,6 +19,9 @@ void Command::commandLine() {
     std::cout << "Enter command, for more info type 'help'\n";
     bool run = true;
     while (run) {
+        CResult<std::string, CError> *stringResult;
+        CResult<std::string, CError> *ASTResult;
+
         std::cout << "> ";
         std::getline(std::cin, line);
 
@@ -33,10 +37,10 @@ void Command::commandLine() {
         if (command == "help") {
             helpCommand();
         } else if (command == "enter") {
-            if (arguments.empty()) CResult<void, CError>::fail(new CError("Error: no arguments entered. Please try again.\n")).showErrors();
+            if (arguments.empty()) Save<void>::saveToFile(CResult<void, CError>::fail(new CError("Error: no arguments entered. Please try again.\n")), "errorLog.txt");
             else enterCommand(arguments);
         } else if (command == "join") {
-            if (arguments.empty()) CResult<void, CError>::fail(new CError("Error: no arguments entered. Please try again.\n")).showErrors();
+            if (arguments.empty()) Save<void>::saveToFile(CResult<void, CError>::fail(new CError("Error: no arguments entered. Please try again.\n")), "errorLog.txt");
             else joinCommand(arguments);
         } else if (command == "print") {
             printCommand();
@@ -47,7 +51,8 @@ void Command::commandLine() {
         } else if (command == "exit") {
             run = false;
         } else {
-            CResult<void, CError>::fail(new CError("Wrong value entered! Please try again.\n")).showErrors();
+            std::cout << ERROR_MSG;
+            Save<void>::saveToFile(CResult<void, CError>::fail(new CError("Error: Wrong value entered! Please try again.\n")), "errorLog.txt");
         }
     }
 }
@@ -60,37 +65,62 @@ void Command::helpCommand() {
               << "print - Print tree\n"
               << "comp  - compile <var1> <var2> ...\n"
               << "vars  - Show variables\n"
-              << "exit  - Exit the program\n"
-              << "error - view error log\n";
+              << "exit  - Exit the program\n";
 }
 
 void Command::enterCommand(const std::string& formula) {
-    CResult result = this->prepareEnter(formula);
-    if (!result.isSuccess()) result.showErrors();
+    const CResult<AbstractSyntaxTree*, CError> result = this->prepareEnter(formula);
+    if (!result.isSuccess()) {
+        std::cout << ERROR_MSG;
+        Save<AbstractSyntaxTree*>::saveToFile(result, "errorLog.txt");
+    }
+    else {
+        Save<AbstractSyntaxTree*>::saveToFile(result, "treeStatus.txt");
+    }
 }
 
 void Command::joinCommand(const std::string& formula) {
-    CResult result = AST.join(formula);
-    if (!result.isSuccess()) result.showErrors();
+    const CResult<AbstractSyntaxTree*, CError> result = AST.join(formula);
+    if (!result.isSuccess()) {
+        std::cout << ERROR_MSG;
+        Save<AbstractSyntaxTree*>::saveToFile(result, "errorLog.txt");
+    }
+    else {
+        Save<AbstractSyntaxTree*>::saveToFile(result, "treeStatus.txt");
+    }
 }
 
 void Command::printCommand() const {
     CResult<std::string, CError> result = this->AST.returnFormula();
     if(result.isSuccess()) std::cout << (*result.getValue());
-    else result.showErrors();
+    else {
+        std::cout << ERROR_MSG;
+        Save<std::string>::saveToFile(result, "errorLog.txt");
+    }
 }
 
 void Command::varsCommand() {
     CResult<std::string, CError> result = this->AST.vars();
-    if(result.getValue()->empty()) CResult<void, CError>(new CError("Error: there are no variables in the tree")).showErrors();
-    else if(result.isSuccess()) std::cout << result.getValue();
-    else result.showErrors();
+
+    if(result.getValue()->empty()) {
+        std::cout << ERROR_MSG;
+        Save<void>::saveToFile(CResult<void, CError>(new CError("Error: there are no variables in the tree")), "errorLog.txt");
+    }
+    else if(result.isSuccess()) std::cout << *result.getValue();
+    else {
+        Save<std::string>::saveToFile(result, "errorLog.txt");
+        std::cout << ERROR_MSG;
+    }
 }
+
 
 void Command::compCommand(const std::string& formula) const {
     CResult<std::string, CError> result = this->AST.comp(formula);
-    if(result.isSuccess()) std::cout << result.getValue();
-    else result.showErrors();
+    if(result.isSuccess()) std::cout << *result.getValue();
+    else {
+    std::cout << ERROR_MSG;
+        Save<std::string>::saveToFile(result, "errorLog.txt");
+    }
 }
 
 CResult<bool, CError> Command::checkFormula(const std::string &formula) {
@@ -103,22 +133,22 @@ CResult<bool, CError> Command::checkFormula(const std::string &formula) {
 
     std::string wrongValues;
 
-    for (int i = 0; i < formula.size(); i++) {
-        char c = formula[i];
+    for (char c : formula) {
         if (!std::isdigit(c) && !std::isalpha(c) && c != '.' && c != '+' && c != '-' && c != '*' && c != '/') {
             wrongValues += c;
             wrongValues += " ";
         }
     }
     if (!wrongValues.empty()) {
-        return CResult<bool,CError>::fail(new CError("detected wrong values in formula: \n" +  wrongValues + '\n'));
+        return CResult<bool,CError>::fail(new CError("Error: detected wrong values in formula: " + formula + ": " + wrongValues + '\n'));
     }
     return CResult<bool,CError>::success(true);
 }
 
-CResult<AbstractSyntaxTree, CError> Command::prepareEnter(const std::string &formula) {
+CResult<AbstractSyntaxTree*, CError> Command::prepareEnter(const std::string &formula) {
     std::string fixedFormula;
     std::string currentFormula;
+    std::vector<CError*> errorVector;
 
     for (int i = 0; i <= formula.size(); i++) {
         if (i < formula.size() && formula[i] != ' ') {
@@ -129,15 +159,23 @@ CResult<AbstractSyntaxTree, CError> Command::prepareEnter(const std::string &for
                 if (resultFormula.isSuccess()) {
                     fixedFormula += currentFormula + " ";
                     currentFormula.clear();
-                } else {
-                    return CResult<AbstractSyntaxTree, CError>::fail(resultFormula.getErrors());
+                }
+                else {
+                    for (CError* error : resultFormula.getErrors()) {
+                        errorVector.push_back(new CError(*error));
+                    }
                 }
             }
         }
     }
 
+    CResult<AbstractSyntaxTree*, CError> temp = AST.enter(fixedFormula);
 
-    return AST.enter(fixedFormula);
+    for(CError* err : temp.getErrors()) {
+        errorVector.push_back(err);
+    }
+    if(temp.isSuccess()) return temp;
+    return errorVector;
 }
 
 
